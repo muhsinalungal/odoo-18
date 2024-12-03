@@ -21,7 +21,7 @@
 #############################################################################
 {
     'name': 'Odoo 18 Budget Management',
-    'version': '18.0.1.0.0',
+    'version': '1.0',
     'category': 'Accounting',
     'summary': """ Budget Management for Odoo 18 Community Edition. """,
     'description': """ This module allows accountants to manage analytic and 

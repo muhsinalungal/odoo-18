@@ -7,7 +7,7 @@
 ##############################################################################
 {
     'name': 'Disable Quick Create | Disable Create and Edit on Many2one',
-    'version': '18.0.1.0.0',
+    'version': '1.0',
     "description": """
             Disable Quick Create for many2one field in odoo, With this app, 
             You can prevent user create and edit on Many2one field.

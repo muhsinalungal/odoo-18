@@ -31,28 +31,16 @@
     'website': 'https://store.ksolves.com/',
 
     'live_test_url': 'https://dynamicreport15.kappso.in/web/demo_login',
-
     'category': 'Accounting/Accounting',
-
     'currency': 'EUR',
-
-    'version': '18.0.1.0.0',
-
-
+    'version': '1.0',
     'price': '119',
-
     'license': 'OPL-1',
-
     'maintainer': 'Ksolves India Ltd.',
-
     'support': 'sales@ksolves.com',
-
     'images': ['static/description/DFR2.gif'],
-
     'depends': ['base', 'mail', 'account', 'sale_management'],
-
     'auto_install': True,
-
     'data': ['security/ir.model.access.csv', 'data/ks_dfr_account_data.xml', 'data/ks_dynamic_financial_report.xml',
              'security/ks_access_file.xml',
              'views/ks_mail_template.xml', 'views/ks_searchtemplate.xml', 'views/ks_base_template.xml',
