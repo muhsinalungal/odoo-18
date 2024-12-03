@@ -20,7 +20,6 @@
 #
 #############################################################################
 from odoo import api, fields, models
-from odoo.modules import get_resource_path
 from odoo.tools.misc import file_path
 
 try:
