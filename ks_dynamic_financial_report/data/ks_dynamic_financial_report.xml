@@ -740,7 +740,7 @@
             <field name="name">Dynamic Financial Reports</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">ks.dynamic.financial.reports</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="domain">[('ks_hide_default_reports', '=', False)]</field>
             <field name="view_id" ref="ks_df_tree_view"/>
         </record>
