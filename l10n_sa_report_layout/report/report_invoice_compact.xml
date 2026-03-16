@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="sa_invoice_body_compact" inherit_id="l10n_gcc_invoice.arabic_english_invoice" priority="90">
+        <xpath expr="//div[hasclass('page')]" position="attributes">
+            <attribute name="class" add="o_sa_invoice_compact" separator=" "/>
+        </xpath>
+
+        <xpath expr="//tr" position="attributes">
+            <attribute name="style"/>
+        </xpath>
+
+        <xpath expr="//img[@t-if='o._l10n_sa_is_legal() and o.l10n_sa_qr_code_str']" position="attributes">
+            <attribute name="class" add="o_sa_invoice_qr" separator=" "/>
+            <attribute name="t-att-src">'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', quote_plus(o.l10n_sa_qr_code_str), 150, 150)</attribute>
+        </xpath>
+
+        <xpath expr="//h3" position="attributes">
+            <attribute name="class" add="o_sa_invoice_title_row" separator=" "/>
+        </xpath>
+        <xpath expr="//h3//div[hasclass('col-4')][1]" position="attributes">
+            <attribute name="class" add="o_sa_invoice_title_label" separator=" "/>
+        </xpath>
+        <xpath expr="//h3//div[hasclass('col-4')][2]" position="attributes">
+            <attribute name="class" add="o_sa_invoice_title_number" separator=" "/>
+        </xpath>
+        <xpath expr="//h3//div[hasclass('col-4')][3]" position="attributes">
+            <attribute name="class" add="o_sa_invoice_title_label o_sa_invoice_title_label_ar" separator=" "/>
+        </xpath>
+
+        <xpath expr="//div[@id='informations']" position="attributes">
+            <attribute name="class" add="o_sa_invoice_meta" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='informations']" position="replace">
+            <div
+                id="informations"
+                class="pb-3 o_sa_invoice_meta"
+                t-if="o.invoice_date or (o.invoice_date_due and o.move_type == 'out_invoice' and o.state == 'posted') or o.delivery_date or o.invoice_origin or o.partner_id.ref or o.ref">
+                <div class="row" t-if="o.invoice_date" name="invoice_date">
+                    <div class="col-2 offset-6">
+                        <strong style="white-space:nowrap">Invoice Date:</strong>
+                    </div>
+                    <div class="col-2">
+                        <span t-out="o.invoice_date.strftime('%Y-%m-%d')"/>
+                    </div>
+                    <div class="col-2 text-end">
+                        <strong style="white-space:nowrap">: تاريخ الفاتورة</strong>
+                    </div>
+                </div>
+                <div
+                    class="row"
+                    t-if="o.invoice_date_due and o.move_type == 'out_invoice' and o.state == 'posted'"
+                    name="due_date">
+                    <div class="col-2 offset-6">
+                        <strong style="white-space:nowrap">Due Date:</strong>
+                    </div>
+                    <div class="col-2">
+                        <span t-out="o.invoice_date_due.strftime('%Y-%m-%d')"/>
+                    </div>
+                    <div class="col-2 text-end">
+                        <strong style="white-space:nowrap">: تاريخ الاستحقاق</strong>
+                    </div>
+                </div>
+                <div class="row" t-if="o.delivery_date" name="delivery_date">
+                    <div class="col-6"></div>
+                    <div class="col-2">
+                        <strong style="white-space:nowrap">Supply Date:</strong>
+                    </div>
+                    <div class="col-2">
+                        <span t-out="o.delivery_date.strftime('%Y-%m-%d')"/>
+                    </div>
+                    <div class="col-2 text-end">
+                        <strong style="white-space:nowrap">: تاريخ التوريد</strong>
+                    </div>
+                </div>
+                <div class="row" t-if="o.invoice_origin" name="origin">
+                    <div class="col-2 offset-6">
+                        <strong style="white-space:nowrap">Source:</strong>
+                    </div>
+                    <div class="col-2">
+                        <span t-field="o.invoice_origin"/>
+                    </div>
+                    <div class="col-2 text-end">
+                        <strong style="white-space:nowrap">: المصدر</strong>
+                    </div>
+                </div>
+                <div class="row" t-if="o.partner_id.ref" name="customer_code">
+                    <div class="col-2 offset-6">
+                        <strong style="white-space:nowrap">Customer Code:</strong>
+                    </div>
+                    <div class="col-2">
+                        <span t-field="o.partner_id.ref"/>
+                    </div>
+                    <div class="col-2 text-end">
+                        <strong style="white-space:nowrap">: كود العميل</strong>
+                    </div>
+                </div>
+                <div class="row" t-if="o.ref" name="reference">
+                    <div class="col-2 offset-6">
+                        <strong style="white-space:nowrap">Reference:</strong>
+                    </div>
+                    <div class="col-2">
+                        <span t-field="o.ref"/>
+                    </div>
+                    <div class="col-2 text-end">
+                        <strong style="white-space:nowrap">: رقم الإشارة</strong>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+        <xpath expr="//table[@name='invoice_line_table']" position="attributes">
+            <attribute name="class" add="o_sa_compact_line_table o_sa_invoice_line_table" separator=" "/>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/thead" position="attributes">
+            <attribute name="class" add="o_sa_invoice_line_table_head" separator=" "/>
+        </xpath>
+        <xpath expr="//table[@name='invoice_line_table']/tbody" position="attributes">
+            <attribute name="class" add="o_sa_invoice_line_table_body" separator=" "/>
+        </xpath>
+        <xpath expr="//td[@name='account_invoice_line_name']" position="attributes">
+            <attribute name="class" add="o_sa_invoice_line_description" separator=" "/>
+        </xpath>
+
+        <xpath expr="//div[@id='total']/ancestor::div[hasclass('clearfix')][1]" position="attributes">
+            <attribute name="class" add="o_sa_invoice_totals_block" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='total']//table[hasclass('o_total_table')]" position="attributes">
+            <attribute name="class" add="o_sa_compact_totals_table o_sa_invoice_totals_table" separator=" "/>
+        </xpath>
+
+        <xpath expr="//div[hasclass('mb-2')]" position="attributes">
+            <attribute name="class" add="o_sa_invoice_amount_words" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@name='exchange_rate']/ancestor::div[hasclass('row')][1]" position="attributes">
+            <attribute name="class" add="o_sa_invoice_company_currency" separator=" "/>
+        </xpath>
+
+        <xpath expr="//div[@name='payment_communication']" position="attributes">
+            <attribute name="class" add="o_sa_invoice_payment_reference" separator=" "/>
+        </xpath>
+    </template>
+
+    <template id="sale_report_body_compact" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//div[hasclass('page')]" position="attributes">
+            <attribute name="class" add="o_sa_sale_compact" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='informations']" position="attributes">
+            <attribute name="class" add="o_sa_compact_meta" separator=" "/>
+        </xpath>
+        <xpath expr="//table[hasclass('o_main_table')]" position="attributes">
+            <attribute name="class" add="o_sa_compact_line_table" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='total']//table[hasclass('o_total_table')]" position="attributes">
+            <attribute name="class" add="o_sa_compact_totals_table" separator=" "/>
+        </xpath>
+    </template>
+</odoo>

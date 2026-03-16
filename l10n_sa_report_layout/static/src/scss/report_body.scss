@@ -1,0 +1,185 @@
+.o_sa_invoice_compact {
+    h3.o_sa_invoice_title_row {
+        font-size: 1rem !important;
+        margin-bottom: 0.9rem;
+    }
+
+    .o_sa_invoice_qr {
+        display: block;
+        width: 150px;
+        height: 150px;
+        max-width: 150px;
+        max-height: 150px;
+    }
+
+    .o_sa_invoice_title_label {
+        font-size: 1.05rem !important;
+        line-height: 1.25;
+        font-weight: 600;
+    }
+
+    .o_sa_invoice_title_number {
+        font-size: 1.1rem !important;
+        line-height: 1.2;
+        font-weight: 600;
+    }
+
+    .o_sa_invoice_title_label_ar {
+        direction: rtl;
+    }
+
+    .o_sa_invoice_meta {
+        font-size: 12px !important;
+        line-height: 1.3;
+        padding-bottom: 0.35rem !important;
+    }
+
+    .o_sa_invoice_meta_table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 4px;
+    }
+
+    .o_sa_invoice_meta_table,
+    .o_sa_invoice_meta_table tbody,
+    .o_sa_invoice_meta_table tr,
+    .o_sa_invoice_meta_table td,
+    .o_sa_invoice_meta_item_table,
+    .o_sa_invoice_meta_item_table tbody,
+    .o_sa_invoice_meta_item_table tr,
+    .o_sa_invoice_meta_item_table td {
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        outline: 0 !important;
+    }
+
+    .o_sa_invoice_meta_table_cell {
+        width: 50%;
+        padding: 0 6px;
+        vertical-align: top;
+    }
+
+    .o_sa_invoice_meta_item_table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+
+    .o_sa_invoice_meta_item_table td {
+        font-size: 11px !important;
+        line-height: 1.25;
+        vertical-align: top;
+        padding: 0 !important;
+    }
+
+    .o_sa_invoice_meta_label_en {
+        width: 39%;
+        text-align: left;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .o_sa_invoice_meta_value {
+        width: 24%;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .o_sa_invoice_meta_label_ar {
+        width: 37%;
+        text-align: right;
+        direction: rtl;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .o_sa_invoice_payment_reference,
+    .o_sa_invoice_payment_reference strong,
+    .o_sa_invoice_payment_reference span,
+    .o_sa_invoice_payment_reference div {
+        font-size: 11px !important;
+        line-height: 1.25;
+    }
+
+    .o_sa_invoice_line_table {
+        margin-bottom: 0.6rem;
+    }
+
+    .o_sa_invoice_line_description {
+        font-size: 11.5px !important;
+        line-height: 1.35;
+    }
+
+    .o_sa_invoice_line_description span[dir="rtl"] {
+        display: inline-block;
+    }
+
+    .o_sa_invoice_totals_block {
+        padding-top: 0.65rem !important;
+        padding-bottom: 0.45rem !important;
+    }
+
+    .o_sa_invoice_totals_table td,
+    .o_sa_invoice_totals_table span,
+    .o_sa_invoice_totals_table strong,
+    .o_sa_invoice_amount_words p,
+    .o_sa_invoice_amount_words span,
+    .o_sa_invoice_company_currency,
+    .o_sa_invoice_company_currency div,
+    .o_sa_invoice_company_currency strong {
+        font-size: 12px;
+        line-height: 1.3;
+    }
+
+    .o_sa_invoice_totals_table strong {
+        font-weight: 600;
+    }
+}
+
+.o_sa_compact_meta {
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.o_sa_compact_meta strong,
+.o_sa_compact_meta div,
+.o_sa_compact_meta span {
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.o_sa_compact_line_table thead th {
+    font-size: 11px !important;
+    line-height: 1.25;
+    padding: 6px 5px !important;
+    vertical-align: middle;
+}
+
+.o_sa_compact_line_table tbody td {
+    font-size: 11.5px !important;
+    line-height: 1.35;
+    padding: 6px 5px !important;
+    vertical-align: top;
+}
+
+.o_sa_compact_line_table .o_line_section td,
+.o_sa_compact_line_table .o_line_note td {
+    font-size: 11.5px !important;
+}
+
+.o_sa_compact_line_table .text-nowrap {
+    white-space: nowrap;
+}
+
+.o_sa_compact_totals_table td,
+.o_sa_compact_totals_table span,
+.o_sa_compact_totals_table strong {
+    font-size: 12px !important;
+    line-height: 1.3;
+}
+
+.o_sa_compact_totals_table td {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}

@@ -16,10 +16,12 @@
         'views/res_company_views.xml',
         'views/base_document_layout_views.xml',
         'report/report_templates.xml',
+        'report/report_invoice_compact.xml',
     ],
     'assets': {
         'web.report_assets_common': [
             'l10n_sa_report_layout/static/src/scss/report_layout.scss',
+            'l10n_sa_report_layout/static/src/scss/report_body.scss',
         ],
     },
     'installable': True,
