@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_base_document_layout_l10n_sa_report_layout" model="ir.ui.view">
+            <field name="name">base.document.layout.l10n.sa.report.layout</field>
+            <field name="model">base.document.layout</field>
+            <field name="inherit_id" ref="account.view_base_document_layout"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_details']" position="after">
+                    <separator string="Bilingual Header" colspan="2"/>
+                    <group col="2">
+                        <group>
+                            <field name="header_bilingual_enabled"/>
+                            <field name="name_ar" string="Company Name (Arabic)" placeholder="اسم الشركة"/>
+                            <field name="street_ar" string="Street (Arabic)" placeholder="الشارع"/>
+                            <field name="street2_ar" string="Street 2 (Arabic)" placeholder="الشارع 2"/>
+                        </group>
+                        <group>
+                            <field name="city_ar" string="City (Arabic)" placeholder="المدينة"/>
+                            <field name="state_ar" string="State (Arabic)" placeholder="المنطقة"/>
+                            <field name="zip_ar" string="ZIP (Arabic)" placeholder="الرمز البريدي"/>
+                            <field name="country_ar" string="Country (Arabic)" placeholder="الدولة"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

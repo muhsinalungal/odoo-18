@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="company_bilingual_header_details_en">
+        <div class="o_bilingual_company_header_col o_bilingual_company_header_col_en">
+            <div class="o_bilingual_company_name" t-if="company.name">
+                <span t-esc="company.name"/>
+            </div>
+            <div class="o_bilingual_company_line" t-if="company.street">
+                <span t-esc="company.street"/>
+            </div>
+            <div class="o_bilingual_company_line" t-if="company.street2">
+                <span t-esc="company.street2"/>
+            </div>
+            <div class="o_bilingual_company_line" t-if="company.zip or company.city">
+                <span t-if="company.zip" t-esc="company.zip"/>
+                <t t-if="company.zip and company.city">, </t>
+                <span t-if="company.city" t-esc="company.city"/>
+            </div>
+            <div class="o_bilingual_company_line" t-if="company.state_id.name or company.country_id.name">
+                <span t-if="company.state_id.name" t-esc="company.state_id.name"/>
+                <t t-if="company.state_id.name and company.country_id.name">, </t>
+                <span t-if="company.country_id.name" t-esc="company.country_id.name"/>
+            </div>
+            <div class="o_bilingual_company_vat o_bilingual_company_vat_en" t-if="not forced_vat and company.vat">
+                <span class="o_bilingual_company_vat_label">VAT Number:</span>
+                <span t-esc="company.vat"/>
+            </div>
+            <div class="o_bilingual_company_vat o_bilingual_company_vat_en" t-elif="forced_vat">
+                <span class="o_bilingual_company_vat_label">VAT Number:</span>
+                <span t-esc="forced_vat"/>
+            </div>
+        </div>
+    </template>
+
+    <template id="company_bilingual_header_details_ar">
+        <div class="o_bilingual_company_header_col o_bilingual_company_header_col_ar">
+            <div class="o_bilingual_company_name" t-if="company.name_ar">
+                <span t-esc="company.name_ar"/>
+            </div>
+            <div class="o_bilingual_company_line" t-if="company.street_ar">
+                <span t-esc="company.street_ar"/>
+            </div>
+            <div class="o_bilingual_company_line" t-if="company.street2_ar">
+                <span t-esc="company.street2_ar"/>
+            </div>
+            <div class="o_bilingual_company_line" t-if="company.zip_ar or company.city_ar">
+                <span t-if="company.zip_ar" t-esc="company.zip_ar"/>
+                <t t-if="company.zip_ar and company.city_ar">، </t>
+                <span t-if="company.city_ar" t-esc="company.city_ar"/>
+            </div>
+            <div class="o_bilingual_company_line" t-if="company.state_ar or company.country_ar">
+                <span t-if="company.state_ar" t-esc="company.state_ar"/>
+                <t t-if="company.state_ar and company.country_ar">، </t>
+                <span t-if="company.country_ar" t-esc="company.country_ar"/>
+            </div>
+            <div class="o_bilingual_company_vat o_bilingual_company_vat_ar" t-if="not forced_vat and company.vat">
+                <span t-esc="company.vat"/>
+                <span class="o_bilingual_company_vat_label"> :الرقم الضريبي</span>
+            </div>
+            <div class="o_bilingual_company_vat o_bilingual_company_vat_ar" t-elif="forced_vat">
+                <span t-esc="forced_vat"/>
+                <span class="o_bilingual_company_vat_label"> :الرقم الضريبي</span>
+            </div>
+        </div>
+    </template>
+
+    <template id="company_bilingual_header_center">
+        <div class="o_bilingual_company_header_col o_bilingual_company_header_col_center">
+            <img t-if="company.logo" class="o_company_logo o_bilingual_company_logo" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+            <t t-if="custom_header_sa" t-out="custom_header_sa"/>
+            <div t-if="company.report_header" t-field="company.report_header" class="o_company_tagline o_bilingual_company_tagline fw-bold">
+                Company tagline
+            </div>
+        </div>
+    </template>
+
+    <template id="company_bilingual_header_full">
+        <div class="o_bilingual_company_header">
+            <t t-call="l10n_sa_report_layout.company_bilingual_header_details_en"/>
+            <t t-call="l10n_sa_report_layout.company_bilingual_header_center"/>
+            <t t-call="l10n_sa_report_layout.company_bilingual_header_details_ar"/>
+        </div>
+    </template>
+
+    <template id="external_layout_striped" inherit_id="web.external_layout_striped">
+        <xpath expr="//div[hasclass('d-flex')][1]" position="before">
+            <t t-set="has_arabic_identity" t-value="company.name_ar or company.street_ar or company.street2_ar or company.city_ar or company.state_ar or company.country_ar or company.zip_ar"/>
+            <t t-set="show_bilingual_header" t-value="company.country_id.code == 'SA' or (company.header_bilingual_enabled and has_arabic_identity)"/>
+        </xpath>
+        <xpath expr="//div[hasclass('d-flex')][1]" position="replace">
+            <t t-if="show_bilingual_header">
+                <t t-call="l10n_sa_report_layout.company_bilingual_header_full"/>
+            </t>
+            <div t-else="" class="d-flex">
+                <div class="mw-50">
+                    <img t-if="company.logo" class="o_company_logo_big" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                    <div t-if="company.report_header" t-field="company.report_header" class="o_company_tagline fw-bold mt-2">Company tagline</div>
+                </div>
+                <div class="w-50 ms-3" name="company_address">
+                    <ul class="list-unstyled" name="company_address_list">
+                        <li t-if="company.is_company_details_empty">
+                            <span t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'>
+                                <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
+                                    <strong>Company address block</strong>
+                                    <div>Contains the company address.</div>
+                                </div>
+                            </span>
+                        </li>
+                        <li t-else="">
+                            <span t-field="company.company_details">
+                                <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
+                                    <strong>Company details block</strong>
+                                    <div>Contains the company details.</div>
+                                </div>
+                            </span>
+                        </li>
+                        <li t-if="not forced_vat">
+                            <t t-if="company.vat">
+                                <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                                <span t-esc="company.vat"/>
+                            </t>
+                        </li>
+                        <li t-else="">
+                            <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                            <span t-esc="forced_vat"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="external_layout_boxed" inherit_id="web.external_layout_boxed">
+        <xpath expr="//div[hasclass('row')][1]" position="before">
+            <t t-set="has_arabic_identity" t-value="company.name_ar or company.street_ar or company.street2_ar or company.city_ar or company.state_ar or company.country_ar or company.zip_ar"/>
+            <t t-set="show_bilingual_header" t-value="company.country_id.code == 'SA' or (company.header_bilingual_enabled and has_arabic_identity)"/>
+        </xpath>
+        <xpath expr="//div[hasclass('row')][1]" position="replace">
+            <t t-if="show_bilingual_header">
+                <t t-call="l10n_sa_report_layout.company_bilingual_header_full"/>
+            </t>
+            <div t-else="" class="row mb8">
+                <div class="col-4">
+                    <img t-if="company.logo" class="o_company_logo_big" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                </div>
+                <div class="col-8 text-end mb4">
+                    <div name="company_address" class="mb4">
+                        <ul class="list-unstyled" name="company_address_list">
+                            <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'>
+                                <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
+                                    <strong>Company address block</strong>
+                                    <div>Contains the company address.</div>
+                                </div>
+                            </span></li>
+                            <li t-else="">
+                                <span t-field="company.company_details">
+                                    <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
+                                        <strong>Company details block</strong>
+                                        <div>Contains the company details.</div>
+                                    </div>
+                                </span>
+                            </li>
+                            <li t-if="not forced_vat">
+                                <t t-if="company.vat">
+                                    <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                                    <span t-esc="company.vat"/>
+                                </t>
+                            </li>
+                            <li t-else="">
+                                <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                                <span t-esc="forced_vat"/>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="external_layout_bold" inherit_id="web.external_layout_bold">
+        <xpath expr="//div[hasclass('row')][1]" position="before">
+            <t t-set="has_arabic_identity" t-value="company.name_ar or company.street_ar or company.street2_ar or company.city_ar or company.state_ar or company.country_ar or company.zip_ar"/>
+            <t t-set="show_bilingual_header" t-value="company.country_id.code == 'SA' or (company.header_bilingual_enabled and has_arabic_identity)"/>
+        </xpath>
+        <xpath expr="//div[hasclass('row')][1]" position="replace">
+            <t t-if="show_bilingual_header">
+                <t t-call="l10n_sa_report_layout.company_bilingual_header_full"/>
+            </t>
+            <div t-else="" class="row">
+                <div class="col-6">
+                    <img t-if="company.logo" class="o_company_logo_big" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                </div>
+                <div class="col-5 offset-1" name="company_address">
+                    <ul class="list-unstyled" name="company_address_list">
+                        <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'>
+                            <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
+                                <strong>Company address block</strong>
+                                <div>Contains the company address.</div>
+                            </div>
+                        </span></li>
+                        <li t-else="">
+                            <span t-field="company.company_details">
+                                <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
+                                    <strong>Company details block</strong>
+                                    <div>Contains the company details.</div>
+                                </div>
+                            </span>
+                        </li>
+                        <li t-if="not forced_vat">
+                            <t t-if="company.vat">
+                                <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                                <span t-esc="company.vat"/>
+                            </t>
+                        </li>
+                        <li t-else="">
+                            <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                            <span t-esc="forced_vat"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="external_layout_standard" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[hasclass('d-flex')][1]" position="before">
+            <t t-set="has_arabic_identity" t-value="company.name_ar or company.street_ar or company.street2_ar or company.city_ar or company.state_ar or company.country_ar or company.zip_ar"/>
+            <t t-set="show_bilingual_header" t-value="company.country_id.code == 'SA' or (company.header_bilingual_enabled and has_arabic_identity)"/>
+        </xpath>
+        <xpath expr="//div[hasclass('d-flex')][1]" position="replace">
+            <t t-if="show_bilingual_header">
+                <t t-call="l10n_sa_report_layout.company_bilingual_header_full"/>
+            </t>
+            <div t-else="" class="d-flex justify-content-between align-items-center mb-2">
+                <img t-if="company.logo" class="o_company_logo_small" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                <div t-if="company.report_header" t-field="company.report_header" class="o_company_tagline mw-50 fw-bold">Company tagline</div>
+            </div>
+        </xpath>
+        <xpath expr="//div[@name='company_address']/ancestor::div[hasclass('row')][1]" position="replace">
+            <t t-if="not show_bilingual_header">
+                <div class="row">
+                    <div class="col-6" name="company_address">
+                        <ul class="list-unstyled" name="company_address_list">
+                            <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'>
+                                <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
+                                    <strong>Company address block</strong>
+                                    <div>Contains the company address.</div>
+                                </div>
+                            </span></li>
+                            <li t-else="">
+                                <span t-field="company.company_details">
+                                    <div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
+                                        <strong>Company details block</strong>
+                                        <div>Contains the company details.</div>
+                                    </div>
+                                </span>
+                            </li>
+                            <li t-if="not forced_vat">
+                                <t t-if="company.vat">
+                                    <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                                    <span t-esc="company.vat"/>
+                                </t>
+                            </li>
+                            <li t-else="">
+                                <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                                <span t-esc="forced_vat"/>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="external_layout_folder" inherit_id="web.external_layout_folder">
+        <xpath expr="//div[hasclass('o_folder_company_info')][1]" position="before">
+            <t t-set="has_arabic_identity" t-value="company.name_ar or company.street_ar or company.street2_ar or company.city_ar or company.state_ar or company.country_ar or company.zip_ar"/>
+            <t t-set="show_bilingual_header" t-value="company.country_id.code == 'SA' or (company.header_bilingual_enabled and has_arabic_identity)"/>
+        </xpath>
+        <xpath expr="//div[hasclass('o_folder_company_info')][1]" position="replace">
+            <t t-if="show_bilingual_header">
+                <t t-call="l10n_sa_report_layout.company_bilingual_header_full"/>
+            </t>
+            <div t-else="" class="o_folder_company_info d-flex justify-content-between">
+                <div class="w-50">
+                    <img t-if="company.logo" class="o_company_logo_big mb-2" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                    <div t-if="company.report_header" t-field="company.report_header" class="o_company_tagline fw-bold">Company tagline</div>
+                </div>
+                <div name="company_address" class="w-50 text-end">
+                    <ul class="list-unstyled" name="company_address_list">
+                        <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'>
+                            <div class="d-flex flex-column align-items-center justify-content-center border-1 rounded p-4 h-100 w-100 bg-light opacity-75 text-muted text-center">
+                                <strong>Company address block</strong>
+                                <div>Contains the company address.</div>
+                            </div>
+                        </span></li>
+                        <li t-else="">
+                            <span t-field="company.company_details">
+                                <div class="d-flex flex-column align-items-center justify-content-center border-1 rounded p-4 h-100 w-100 bg-light opacity-75 text-muted text-center">
+                                    <strong>Company details block</strong>
+                                    <div>Contains the company details.</div>
+                                </div>
+                            </span>
+                        </li>
+                        <li t-if="not forced_vat">
+                            <t t-if="company.vat">
+                                <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                                <span t-esc="company.vat"/>
+                            </t>
+                        </li>
+                        <li t-else="">
+                            <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                            <span t-esc="forced_vat"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="external_layout_wave" inherit_id="web.external_layout_wave">
+        <xpath expr="//div[hasclass('d-flex')][1]" position="before">
+            <t t-set="has_arabic_identity" t-value="company.name_ar or company.street_ar or company.street2_ar or company.city_ar or company.state_ar or company.country_ar or company.zip_ar"/>
+            <t t-set="show_bilingual_header" t-value="company.country_id.code == 'SA' or (company.header_bilingual_enabled and has_arabic_identity)"/>
+        </xpath>
+        <xpath expr="//div[hasclass('d-flex')][1]" position="replace">
+            <t t-if="show_bilingual_header">
+                <t t-call="l10n_sa_report_layout.company_bilingual_header_full"/>
+            </t>
+            <div t-else="" class="d-flex justify-content-between">
+                <div class="w-50">
+                    <img t-if="company.logo" class="o_company_logo mb-2" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                    <div t-if="company.report_header" t-field="company.report_header" class="o_company_tagline fw-bold">Company tagline</div>
+                </div>
+                <div name="company_address" class="w-50 text-end">
+                    <ul class="list-unstyled" name="company_address_list">
+                        <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'>
+                            <div class="d-flex flex-column align-items-center justify-content-center border-1 rounded p-4 h-100 w-100 bg-light opacity-75 text-muted text-center">
+                                <strong>Company address block</strong>
+                                <div>Contains the company address.</div>
+                            </div>
+                        </span></li>
+                        <li t-else="">
+                            <span t-field="company.company_details">
+                                <div class="d-flex flex-column align-items-center justify-content-center border-1 rounded p-4 h-100 w-100 bg-light opacity-75 text-muted text-center">
+                                    <strong>Company details block</strong>
+                                    <div>Contains the company details.</div>
+                                </div>
+                            </span>
+                        </li>
+                        <li t-if="not forced_vat">
+                            <t t-if="company.vat">
+                                <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                                <span t-esc="company.vat"/>
+                            </t>
+                        </li>
+                        <li t-else="">
+                            <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                            <span t-esc="forced_vat"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="external_layout_bubble" inherit_id="web.external_layout_bubble">
+        <xpath expr="//div[hasclass('d-flex')][1]" position="before">
+            <t t-set="has_arabic_identity" t-value="company.name_ar or company.street_ar or company.street2_ar or company.city_ar or company.state_ar or company.country_ar or company.zip_ar"/>
+            <t t-set="show_bilingual_header" t-value="company.country_id.code == 'SA' or (company.header_bilingual_enabled and has_arabic_identity)"/>
+        </xpath>
+        <xpath expr="//div[hasclass('d-flex')][1]" position="replace">
+            <t t-if="show_bilingual_header">
+                <t t-call="l10n_sa_report_layout.company_bilingual_header_full"/>
+            </t>
+            <div t-else="" class="d-flex justify-content-between">
+                <div class="w-50">
+                    <img t-if="company.logo" class="o_company_logo mb-2" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                    <div t-if="company.report_header" t-field="company.report_header" class="o_company_tagline fw-bold">Company tagline</div>
+                </div>
+                <div name="company_address" class="w-50 text-end">
+                    <ul class="list-unstyled" name="company_address_list">
+                        <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'>
+                            <div class="d-flex flex-column align-items-center justify-content-center border-1 rounded p-4 h-100 w-100 bg-light opacity-75 text-muted text-center">
+                                <strong>Company address block</strong>
+                                <div>Contains the company address.</div>
+                            </div>
+                        </span></li>
+                        <li t-else="">
+                            <span t-field="company.company_details">
+                                <div class="d-flex flex-column align-items-center justify-content-center border-1 rounded p-4 h-100 w-100 bg-light opacity-75 text-muted text-center">
+                                    <strong>Company details block</strong>
+                                    <div>Contains the company details.</div>
+                                </div>
+                            </span>
+                        </li>
+                        <li t-if="not forced_vat">
+                            <t t-if="company.vat">
+                                <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                                <span t-esc="company.vat"/>
+                            </t>
+                        </li>
+                        <li t-else="">
+                            <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                            <span t-esc="forced_vat"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
