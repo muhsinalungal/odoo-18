@@ -5,21 +5,21 @@
             <div class="o_bilingual_company_name" t-if="company.name">
                 <span t-esc="company.name"/>
             </div>
-            <div class="o_bilingual_company_line" t-if="company.street">
-                <span t-esc="company.street"/>
+            <div class="o_bilingual_company_line" t-if="company.partner_id.street">
+                <span t-esc="company.partner_id.street"/>
             </div>
-            <div class="o_bilingual_company_line" t-if="company.street2">
-                <span t-esc="company.street2"/>
+            <div class="o_bilingual_company_line" t-if="company.partner_id.street2">
+                <span t-esc="company.partner_id.street2"/>
             </div>
-            <div class="o_bilingual_company_line" t-if="company.zip or company.city">
-                <span t-if="company.zip" t-esc="company.zip"/>
-                <t t-if="company.zip and company.city">, </t>
-                <span t-if="company.city" t-esc="company.city"/>
+            <div class="o_bilingual_company_line" t-if="company.partner_id.zip or company.partner_id.city">
+                <span t-if="company.partner_id.zip" t-esc="company.partner_id.zip"/>
+                <t t-if="company.partner_id.zip and company.partner_id.city">, </t>
+                <span t-if="company.partner_id.city" t-esc="company.partner_id.city"/>
             </div>
-            <div class="o_bilingual_company_line" t-if="company.state_id.name or company.country_id.name">
-                <span t-if="company.state_id.name" t-esc="company.state_id.name"/>
-                <t t-if="company.state_id.name and company.country_id.name">, </t>
-                <span t-if="company.country_id.name" t-esc="company.country_id.name"/>
+            <div class="o_bilingual_company_line" t-if="company.partner_id.state_id.name or company.partner_id.country_id.name">
+                <span t-if="company.partner_id.state_id.name" t-esc="company.partner_id.state_id.name"/>
+                <t t-if="company.partner_id.state_id.name and company.partner_id.country_id.name">, </t>
+                <span t-if="company.partner_id.country_id.name" t-esc="company.partner_id.country_id.name"/>
             </div>
             <div class="o_bilingual_company_vat o_bilingual_company_vat_en" t-if="not forced_vat and company.vat">
                 <span class="o_bilingual_company_vat_label">VAT Number:</span>
