@@ -39,6 +39,9 @@ class ks_dynamic_financial_base(models.Model):
     _name = 'ks.dynamic.financial.base'
     _description = 'ks_dynamic_financial_base'
 
+    def _ks_has_analytic_tag_model(self):
+        return bool(self.env.registry.get('account.analytic.tag'))
+
     # setter for searchview filters
 
     def ks_set_tax_report_filter(self):
@@ -93,7 +96,7 @@ class ks_dynamic_financial_base(models.Model):
 
     @property
     def ks_filter_analytic_tags(self):
-        return [] if self.ks_analytic_account_visibility else None
+        return [] if self.ks_analytic_account_visibility and self._ks_has_analytic_tag_model() else None
 
     def ks_get_journal_filter(self):
         return self.ks_journals_filter
@@ -478,7 +481,7 @@ class ks_dynamic_financial_base(models.Model):
 
                         ks_comp_filter_context['analytic_account_ids'] = ks_added_analytic_accounts
 
-                    if ks_df_informations.get('analytic_tags', False):
+                    if self._ks_has_analytic_tag_model() and ks_df_informations.get('analytic_tags', False):
                         ks_analytic_tag_ids = [int(acc) for acc in ks_df_informations['analytic_tags']]
                         ks_added_analytic_tags = ks_analytic_tag_ids \
                                                  and self.env['account.analytic.tag'].browse(ks_analytic_tag_ids) \
@@ -712,7 +715,7 @@ class ks_dynamic_financial_base(models.Model):
                                              or self.env['account.analytic.account']
 
                 ks_filter_context['analytic_account_ids'] = ks_added_analytic_accounts
-            if ks_df_informations.get('analytic_tags', False):
+            if self._ks_has_analytic_tag_model() and ks_df_informations.get('analytic_tags', False):
                 ks_analytic_tag_ids = [int(acc) for acc in ks_df_informations['analytic_tags']]
                 ks_added_analytic_tags = ks_analytic_tag_ids \
                                          and self.env['account.analytic.tag'].browse(ks_analytic_tag_ids) \
@@ -4646,18 +4649,27 @@ class ks_dynamic_financial_base(models.Model):
         else:
             ks_domain += [('move_id.state', 'in', ['draft', 'posted'])]
 
-        self.env['account.move.line'].check_access_rights('read')
+        self.env['account.move.line'].check_access('read')
 
         query = self.env['account.move.line']._where_calc(ks_domain)
 
         # Wrap the query with 'company_id IN (...)' to avoid bypassing company access rights.
         self.env['account.move.line'].sudo()._apply_ir_rules(query)
 
-        return query.get_sql()
+        return (
+            query.from_clause.code,
+            query.where_clause.code,
+            query.from_clause.params + query.where_clause.params,
+        )
 
     def ks_fetch_analytic_account_tag(self, ks_df_informations, ks_eariler_informations):
         ks_df_informations['analytic_tags'] = ks_eariler_informations and ks_eariler_informations.get(
             'analytic_tags') or []
+        if not self._ks_has_analytic_tag_model():
+            ks_df_informations['analytic_tags'] = []
+            ks_df_informations['selected_analytic_tag_ids'] = []
+            ks_df_informations['selected_analytic_tag_names'] = []
+            return
         analytic_tag_ids = [int(tag) for tag in ks_df_informations['analytic_tags']]
         ks_added_analytic_tags = analytic_tag_ids \
                                  and self.env['account.analytic.tag'].browse(analytic_tag_ids) \

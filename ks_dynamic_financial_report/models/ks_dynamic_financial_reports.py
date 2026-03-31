@@ -33,7 +33,7 @@ class KsDynamicFinancialReportBase(models.Model):
         return res
 
     ks_name = fields.Char('Reports Name', required=True, translate=True)
-    report_name = fields.Char('Reports Name')
+    report_name = fields.Char('Report Name')
     ks_parent_id = fields.Many2one('ks.dynamic.financial.reports', 'Parent')
     ks_children_id = fields.One2many('ks.dynamic.financial.reports', 'ks_parent_id', 'Account Report')
     ks_sequence = fields.Integer('Sequence', default=1)
@@ -61,7 +61,7 @@ class KsDynamicFinancialReportBase(models.Model):
     ks_partner_ids = fields.Many2many('res.partner', string='Partners')
     ks_user_id = fields.Many2one('res.users')
     ks_analytic_ids = fields.Many2many('account.analytic.account', string='Analytic Accounts')
-    ks_analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags')
+    ks_analytic_tag_ids = fields.Json(string='Analytic Tags', default=list)
     ks_display_detail = fields.Selection([
         ('no_detail', 'No detail'),
         ('detail_flat', 'Display children flat'),
@@ -115,13 +115,14 @@ class KsDynamicFinancialReportBase(models.Model):
                 ks_menu = self._ks_get_menu_vals(ks_report, ks_parent_id, ks_ir_model_data, ks_action, ks_module_name)
                 self.write({'ks_report_menu_id': ks_menu.id, 'ks_update_menu': True})
 
-    @api.model
-    def create(self, vals):
-        ks_report_menu_id = vals.get('ks_report_menu_id', False)
-        res = super(KsDynamicFinancialReportBase, self).create(vals)
-        if ks_report_menu_id:
-            res._ks_create_menu_and_action(ks_report_menu_id)
-        return res
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super(KsDynamicFinancialReportBase, self).create(vals_list)
+        for record, vals in zip(records, vals_list):
+            ks_report_menu_id = vals.get('ks_report_menu_id', False)
+            if ks_report_menu_id:
+                record._ks_create_menu_and_action(ks_report_menu_id)
+        return records
 
     def write(self, vals):
         ks_menu_parent_id = vals.pop('ks_menu_parent_id', False)
@@ -166,7 +167,7 @@ class AccountAccount(models.Model):
         if ks_cash_flow_id:
             return [('parent_id.id', '=', ks_cash_flow_id.id)]
 
-    ks_cash_flow_category = fields.Many2one('ks.dynamic.financial.reports', string="Cash Flow type",
+    ks_cash_flow_category = fields.Many2one('ks.dynamic.financial.reports', string="Dynamic Cash Flow Type",
                                             domain=ks_get_cashflow_domain)
 
     @api.onchange('ks_cash_flow_category')

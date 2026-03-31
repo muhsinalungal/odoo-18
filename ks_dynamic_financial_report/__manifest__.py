@@ -33,7 +33,7 @@
     'live_test_url': 'https://dynamicreport15.kappso.in/web/demo_login',
     'category': 'Accounting/Accounting',
     'currency': 'EUR',
-    'version': '1.0',
+    'version': '18.0.1.0.0',
     'price': '119',
     'license': 'OPL-1',
     'maintainer': 'Ksolves India Ltd.',

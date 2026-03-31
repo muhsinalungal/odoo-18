@@ -9,7 +9,7 @@
             <xpath expr="//block[@name='default_taxes_setting_container']" position="after">
                 <h2>DFR</h2>
                 <div class="row mt16 o_settings_container" name="ks_dfr_settings">
-                    <div class="col-12 col-lg-6 o_setting_box" id="ks_enable_ledger_in_bal_settings">
+                    <div class="col-12 col-lg-6 o_setting_box" id="ks_disable_trial_en_bal_settings">
                         <div class="o_setting_left_pane">
                             <field name="ks_enable_ledger_in_bal"/>
                         </div>
@@ -22,7 +22,7 @@
                     </div>
 
                     <div class="col-12 col-lg-6 o_setting_box" id="ks_enable_ledger_in_bal_settings">
-                        <div class="o_setting_right_pane">
+                        <div class="o_setting_left_pane">
                             <field name="ks_disable_trial_en_bal"/>
                         </div>
                         <div class="o_setting_right_pane" name="ks_enable_ledger_in_bal_right_panel">
@@ -46,7 +46,7 @@
                     </div>
 
                     <div class="col-12 col-lg-6 o_setting_box" id="ks_enable_net_tax_settings">
-                        <div class="o_setting_right_pane">
+                        <div class="o_setting_left_pane">
                             <field name="ks_enable_net_tax"/>
                         </div>
                         <div class="o_setting_right_pane" name="ks_enable_net_tax_right_panel">

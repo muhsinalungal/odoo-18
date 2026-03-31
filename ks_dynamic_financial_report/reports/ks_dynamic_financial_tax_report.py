@@ -13,7 +13,7 @@ class KsDynamicFinancialXlsxTR(models.Model):
 
     @api.model
     def ks_dynamic_tax_xlsx(self, ks_df_informations):
-        if self.display_name in 'Tax Report':
+        if self.display_name == 'Tax Report':
             if ks_df_informations['date'].get('ks_start_date') == False and ks_df_informations['date'].get(
                     'ks_start_date') == False:
                 raise ValidationError(_('No export file will get download without date.'))

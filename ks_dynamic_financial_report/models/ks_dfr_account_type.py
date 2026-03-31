@@ -3,6 +3,7 @@ from odoo import models, fields, api, _
 
 class KsDynamicFinancialReportAccount(models.Model):
     _name = 'ks.dynamic.financial.reports.account'
+    _description = 'Dynamic Financial Report Account Type'
 
     ks_name = fields.Char(string="Name")
     ks_account_type = fields.Selection(
