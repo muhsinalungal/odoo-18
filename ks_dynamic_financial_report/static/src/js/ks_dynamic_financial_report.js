@@ -25,11 +25,68 @@ import { MultiRecordSelector } from "@web/core/record_selectors/multi_record_sel
 
 class ksDynamicReportsWidget extends Component {
 
+    _ksHtmlToFragment(html) {
+        const template = document.createElement("template");
+        template.innerHTML = html || "";
+        return template.content;
+    }
+
+    _ksCloseFilterMenus() {
+        document.querySelectorAll('.o_filter_menu').forEach((el) => el.classList.remove('ks_d_block'));
+    }
+
+    _ksGetDetailRowCell(triggerEl) {
+        const detailRow = triggerEl?.nextElementSibling;
+        return detailRow ? detailRow.querySelector('td') : null;
+    }
+
+    _ksAppendDetailContent(triggerEl, content) {
+        const td = this._ksGetDetailRowCell(triggerEl);
+        if (!td) {
+            return;
+        }
+        td.querySelectorAll('.ks_py-mline-table-div').forEach((el) => el.remove());
+        const anchorList = td.querySelector('ul');
+        if (anchorList) {
+            anchorList.insertAdjacentElement('afterend', content);
+            const firstLink = anchorList.querySelector('li:first-child a');
+            if (firstLink) {
+                firstLink.style.backgroundColor = '#00ede8';
+                firstLink.style.fontWeight = 'bold';
+            }
+        }
+    }
+
+    _ksGetClosest(element, selector) {
+        return element ? element.closest(selector) : null;
+    }
+
+    _ksGetAccountIdFromEvent(event) {
+        const currentTarget = event.currentTarget;
+        const accountHolder = event.target.closest("[data-bs-account-id]") || currentTarget.querySelector("[data-bs-account-id]");
+        const rawAccountId = accountHolder ? accountHolder.dataset.bsAccountId : undefined;
+        const accountId = Number.parseInt(rawAccountId, 10);
+        return Number.isInteger(accountId) && accountId > 0 ? accountId : null;
+    }
+
+    _ksGetDatasetInt(event, datasetKey) {
+        const value = event.currentTarget?.dataset?.[datasetKey];
+        const parsedValue = Number.parseInt(value, 10);
+        return Number.isInteger(parsedValue) && parsedValue > 0 ? parsedValue : null;
+    }
+
+    _ksNormalizeResIds(value) {
+        if (!Array.isArray(value)) {
+            return [];
+        }
+        return value
+            .map((id) => Number.parseInt(id, 10))
+            .filter((id) => Number.isInteger(id) && id > 0);
+    }
+
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.user = useService("user");
-        this.rpc = useService("rpc");
         this.dialogService = useService('dialog');
         this.notificationService = useService("notification");
         onWillStart(async () => {
@@ -43,8 +100,9 @@ class ksDynamicReportsWidget extends Component {
         this.ks_df_context = values.context;
         this.ks_report_manager_id = values.ks_report_manager_id;
         this.ks_remarks = values.ks_remarks;
-        this.$ks_buttons = $(values.ks_buttons);
-        this.$ks_searchview_buttons = $(values.ks_searchview_html);
+        this.ks_buttons = values.ks_buttons;
+        this.ks_searchview_html = values.ks_searchview_html;
+        this.ksSearchviewButtonsEl = this._ksHtmlToFragment(values.ks_searchview_html);
         this.ks_currency = values.ks_currency;
         this.ks_report_lines = values.ks_report_lines;
         this.ks_enable_ledger_in_bal = values.ks_enable_ledger_in_bal;
@@ -645,15 +703,15 @@ class ksDynamicReportsWidget extends Component {
 
     async ksGetAgedLinesInfo(event) {
             var ev = event.currentTarget
-             $('.o_filter_menu').removeClass('ks_d_block')
+            this._ksCloseFilterMenus()
             event.preventDefault();
 
 
             var self = this;
-            var partner_id = $(ev).data('bsPartnerId');
+            var partner_id = this._ksGetDatasetInt(event, "bsPartnerId");
             var offset = 0;
-            var td = $(ev).next('tr').find('td');
-            if (td.length == 1) {
+            var td = this._ksGetDetailRowCell(ev);
+            if (td && partner_id) {
                 self.ksGetAgedReportDetailedInfo(offset, partner_id).then(function (datas) {
                     var count = datas[0];
                     var offset = datas[1];
@@ -673,7 +731,6 @@ class ksDynamicReportsWidget extends Component {
                         k.range_6 = self.ksFormatCurrencySign(k.range_6, ksFormatConfigurations, k.range_6 < 0 ? '-' : '');
                         k.date_maturity = DateTime.fromISO(k.date_maturity, { zone: 'utc' });
                     });
-                    $(ev).next('tr').find('td .ks_py-mline-table-div').remove();
                     const content = renderToElement('ks_df_sub_receivable0', {
                             count: count,
                             self: self,
@@ -682,11 +739,7 @@ class ksDynamicReportsWidget extends Component {
                             period_list: period_list,
                             lang: self.ks_df_context.lang
                         })
-                    $(ev).next('tr').find('td ul').after(content)
-                    $(ev).next('tr').find('td ul li:first a').css({
-                        'background-color': '#00ede8',
-                        'font-weight': 'bold',
-                    });
+                    self._ksAppendDetailContent(ev, content)
                     self.render()
                 })
             }
@@ -703,13 +756,13 @@ class ksDynamicReportsWidget extends Component {
     async ksGetConsolidateInfo(event) {
 
             var ev = event.currentTarget
-             $('.o_filter_menu').removeClass('ks_d_block')
+            this._ksCloseFilterMenus()
             event.preventDefault();
             var self = this;
-            var ks_journal_id = $(ev).data('bsJournalId');
+            var ks_journal_id = this._ksGetDatasetInt(event, "bsJournalId");
             var offset = 0;
-            var td = $(ev).next('tr').find('td');
-            if (td.length == 1) {
+            var td = this._ksGetDetailRowCell(ev);
+            if (td && ks_journal_id) {
                 self.ksGetConsolidateLinesByPage(offset, ks_journal_id).then(function (datas) {
                     var offset = datas[0];
                     var account_data = datas[1];
@@ -723,18 +776,13 @@ class ksDynamicReportsWidget extends Component {
                         k.balance = self.ksFormatCurrencySign(k.balance, ksFormatConfigurations, k.balance < 0 ? '-' : '');
                         k.ldate = DateTime.fromISO(k.ldate, { zone: 'utc' });
                     });
-                    $(ev).next('tr').find('td .ks_py-mline-table-div').remove();
                     const content = renderToElement('ks_df_cj_subsection', {
                             offset: offset,
                             self: self,
                             account_data: account_data,
                             lang: self.ks_df_context.lang
                         })
-                    $(ev).next('tr').find('td ul').after(content)
-                    $(ev).next('tr').find('td ul li:first a').css({
-                        'background-color': '#00ede8',
-                        'font-weight': 'bold',
-                    });
+                    self._ksAppendDetailContent(ev, content)
                 })
             }
         }
@@ -749,18 +797,18 @@ class ksDynamicReportsWidget extends Component {
         }
 
 
-        async ksGetMoveLines(event) {
+    async ksGetMoveLines(event) {
 
             var ev = event.currentTarget
             event.preventDefault();
 
-            $('.o_filter_menu').removeClass('ks_d_block')
+            this._ksCloseFilterMenus()
             var self = this;
-            var account_id = $(ev).data('bsAccountId');
+            var account_id = this._ksGetAccountIdFromEvent(event);
             var offset = 0;
-            var td = $(ev).next('tr').find('td');
+            var td = this._ksGetDetailRowCell(ev);
 
-            if (td.length == 1) {
+            if (td && account_id) {
                 self.ksGetGlLineByPage(offset, account_id).then(function (datas) {
                     Object.entries(datas[2]).forEach(([v, k]) => {
                         var ksFormatConfigurations = {
@@ -775,7 +823,6 @@ class ksDynamicReportsWidget extends Component {
                             k.ldate = DateTime.fromISO(k.ldate, { zone: 'utc' }).toFormat('yyyy-MM-dd');
                         }
                     });
-                    $(ev).next('tr').find('td .ks_py-mline-table-div').remove();
                     const content = renderToElement('ks_df_gl_subsection', {
                             count: datas[0],
                             self: self,
@@ -783,11 +830,7 @@ class ksDynamicReportsWidget extends Component {
                             account_data: datas[2],
                             ks_enable_ledger_in_bal: self.ks_enable_ledger_in_bal,
                         })
-                    $(ev).next('tr').find('td ul').after(content)
-                    $(ev).next('tr').find('td ul li:first a').css({
-                        'background-color': '#00ede8',
-                        'font-weight': 'bold',
-                    });
+                    self._ksAppendDetailContent(ev, content)
                 })
             }
         }
@@ -797,7 +840,8 @@ class ksDynamicReportsWidget extends Component {
 
     async ksGetPlLinesByPage(offset, account_id) {
             var self = this;
-            var lines = await this.orm.call("ks.dynamic.financial.reports", 'ks_build_detailed_move_lines', [this.props.action.context.id, offset, account_id, self.ks_df_report_opt, self.$ks_searchview_buttons.find('.ks_search_account_filter').length])
+            var searchAccountFilterCount = self.ksSearchviewButtonsEl ? self.ksSearchviewButtonsEl.querySelectorAll('.ks_search_account_filter').length : 0;
+            var lines = await this.orm.call("ks.dynamic.financial.reports", 'ks_build_detailed_move_lines', [this.props.action.context.id, offset, account_id, self.ks_df_report_opt, searchAccountFilterCount])
             return Promise.resolve(lines);
 
         }
@@ -805,14 +849,14 @@ class ksDynamicReportsWidget extends Component {
     async ksGetPlMoveLines(event) {
 
             var ev = event.currentTarget
-             $('.o_filter_menu').removeClass('ks_d_block')
+            this._ksCloseFilterMenus()
 
             event.preventDefault();
             var self = this;
-            var account_id = $(ev).data('bsAccountId');
+            var account_id = this._ksGetAccountIdFromEvent(event);
             var offset = 0;
-            var td = $(ev).next('tr').find('td');
-            if (td.length == 1) {
+            var td = this._ksGetDetailRowCell(ev);
+            if (td && account_id) {
                 self.ksGetPlLinesByPage(offset, account_id).then(function (datas) {
                      Object.entries(datas[2]).forEach(([v, k]) => {
                         var ksFormatConfigurations = {
@@ -827,7 +871,6 @@ class ksDynamicReportsWidget extends Component {
                             k.ldate = DateTime.fromISO(k.ldate, { zone: 'utc' }).toFormat('yyyy-MM-dd');
                         }
                     });
-                    $(event.currentTarget).next('tr').find('td .ks_py-mline-table-div').remove();
                     const content = renderToElement('ks_df_sub_pl0', {
                             count: datas[0],
                             self: self,
@@ -836,11 +879,7 @@ class ksDynamicReportsWidget extends Component {
                             ks_enable_ledger_in_bal: self.ks_enable_ledger_in_bal,
                             lang: self.ks_df_context.lang
                         })
-                    $(ev).next('tr').find('td ul').after(content)
-                    $(ev).next('tr').find('td ul li:first a').css({
-                        'background-color': '#00ede8',
-                        'font-weight': 'bold',
-                    });
+                    self._ksAppendDetailContent(ev, content)
                 })
             }
         }
@@ -848,32 +887,19 @@ class ksDynamicReportsWidget extends Component {
         async OnClickDate(bsFilter) {
 
                 var self=this
-                console.log(bsFilter);
                 var option_value = bsFilter;
                 self.ks_df_report_opt.print_detailed_view = false;
                 self.ks_df_context.ks_option_enable = false;
                 self.ks_df_context.ks_journal_enable = false
                 self.ks_df_context.ks_account_enable = false
                 self.ks_df_context.ks_account_both_enable = false
-                var ks_options_enable = false
-                if (!$(event.currentTarget).hasClass('selected')){
-                    var ks_options_enable = true
+                var ks_options_enable = !Boolean(self.ks_df_report_opt[option_value]);
+                if (ks_options_enable){
                     if(option_value == 'ks_report_with_lines' && !self.ks_df_context.print_detailed_view){
                     self.ks_df_report_opt.print_detailed_view = true;
                     }
                 }
-                var ks_temp_arr = []
-                var ks_options = $(event.currentTarget)
-                for (var i=0; i < ks_options.length; i++){
-                    if (ks_options[i].dataset.filter !== option_value){
-                        ks_temp_arr.push($(ks_options[i]).hasClass('selected'))
-                    }
-                }
-                if (ks_temp_arr.indexOf(true) !== -1 || ks_options_enable){
-                    self.ks_df_context.ks_option_enable = true;
-                }else{
-                    self.ks_df_context.ks_option_enable = false;
-                }
+                self.ks_df_context.ks_option_enable = ks_options_enable;
 
                 if(option_value=='ks_comparison_range'){
                     var ks_date_range_change = {}
@@ -898,7 +924,7 @@ class ksDynamicReportsWidget extends Component {
                 this.setReportValues(result)
             }
 
-        async OnChangeComp(bsFilter) {
+        async OnChangeComp(bsFilter, event) {
 
                 var self = this
 
@@ -916,8 +942,9 @@ class ksDynamicReportsWidget extends Component {
                     self.ks_df_report_opt.ks_diff_filter.ks_debit_credit_visibility = false
                 }
                 var error = false;
-                var number_period = $(event.currentTarget).parent().parent().find('input[name="periods_number"]')
-                self.ks_df_report_opt.ks_differ.ks_no_of_interval = (number_period.length > 0) ? parseInt(number_period.val()) : 1;
+                var comparisonContainer = this._ksGetClosest(event?.currentTarget, '.dropdown-item');
+                var numberPeriod = comparisonContainer ? comparisonContainer.querySelector('input[name="periods_number"]') : null;
+                self.ks_df_report_opt.ks_differ.ks_no_of_interval = numberPeriod ? parseInt(numberPeriod.value || 1) : 1;
                 if(this.props.date_from_cmp.toISODate==''){
                     error = true;
                 }
@@ -962,27 +989,28 @@ class ksDynamicReportsWidget extends Component {
             }
 
         async js_account_report_group_choice_filter(bsFilter,bsMemberIds) {
+                var self = this;
                 var option_value = bsFilter;
                 var option_member_ids = bsMemberIds || [];
-                var is_selected = $(this).hasClass('selected');
-                Object.entries(self.ks_df_report_opt[option_value]).forEach((el) => {
-                    // if group was selected, we want to uncheck all
+                var selectedIds = new Set(self.ks_df_report_opt[option_value].filter((el) => el.selected).map((el) => Number(el.id)));
+                var is_selected = option_member_ids.every((id) => selectedIds.has(Number(id)));
+                Object.entries(self.ks_df_report_opt[option_value]).forEach(([, el]) => {
                     el.selected = !is_selected && (option_member_ids.indexOf(Number(el.id)) > -1);
                 });
                 const result = await self._ksRenderBody();
                 this.setReportValues(result)
             }
 
-        onKsSearchFilter(){
+        onKsSearchFilter(event){
             var ks_input = event.currentTarget.value;
             var ks_filter = ks_input.toUpperCase();
-            var ks_accounts = $(event.currentTarget.parentElement).find('.js_account_report_choice_filter');
+            var ks_accounts = event.currentTarget.parentElement.querySelectorAll('.js_account_report_choice_filter');
             for (var i = 0; i < ks_accounts.length; i++) {
                 var txtValue = ks_accounts[i].textContent || ks_accounts[i].innerText;
                 if (txtValue.toUpperCase().indexOf(ks_filter) > -1) {
-                    $($(event.currentTarget.parentElement).find('.js_account_report_choice_filter')[i]).removeClass('ks_d_none')
+                    ks_accounts[i].classList.remove('ks_d_none')
                 } else {
-                    $($(event.currentTarget.parentElement).find('.js_account_report_choice_filter')[i]).addClass('ks_d_none')
+                    ks_accounts[i].classList.add('ks_d_none')
                 }
             }
         }
@@ -998,33 +1026,6 @@ class ksDynamicReportsWidget extends Component {
                 var option_value = bsFilter;
                 var option_id = bsId;
 
-                if (!$(event.currentTarget).hasClass('selected')){
-                    var ks_options_enable = true
-                }
-                var ks_temp_arr = []
-                var ks_options = $(event.currentTarget).find('a')
-                for (var i=0; i < ks_options.length; i++){
-                    if (parseInt(ks_options[i].dataset.bsId) !== option_id){
-                        ks_temp_arr.push($(ks_options[i]).hasClass('selected'))
-                    }
-                }
-                if (option_value === 'account'){
-                    if (ks_temp_arr.indexOf(true) !== -1 || ks_options_enable){
-                        self.ks_df_context.ks_account_enable = true;
-                    }
-                }
-                if (option_value === 'journals'){
-                    if (ks_temp_arr.indexOf(true) !== -1 || ks_options_enable){
-                        self.ks_df_context.ks_journal_enable = true;
-                    }
-                }
-                if (option_value === 'account_type'){
-                    if (ks_temp_arr.indexOf(true) !== -1 || ks_options_enable){
-                        self.ks_df_context.ks_account_both_enable = true;
-                    }
-                }
-
-//
                 self.ks_df_report_opt[option_value].filter((el) => {
                 if ('' + el.id == '' + option_id) {
                     if (el.selected === undefined || el.selected === null) {
@@ -1037,23 +1038,32 @@ class ksDynamicReportsWidget extends Component {
                 return el;
             });
 
+                const hasSelectedOptions = self.ks_df_report_opt[option_value].some((el) => el.selected);
+                if (option_value === 'account'){
+                    self.ks_df_context.ks_account_enable = hasSelectedOptions;
+                }
+                if (option_value === 'journals'){
+                    self.ks_df_context.ks_journal_enable = hasSelectedOptions;
+                }
+                if (option_value === 'account_type'){
+                    self.ks_df_context.ks_account_both_enable = hasSelectedOptions;
+                }
+
                 const result = await self._ksRenderBody();
                 this.setReportValues(result)
             }
 
 
-        async ksgetaction() {
+        async ksgetaction(event) {
 
+            event.preventDefault();
             event.stopPropagation();
             var self = this;
-            var action = $(event.target).attr('action');
-            var id = $(event.target).parents('td').data('bsAccountId') || $(event.target).parents('td').data('bsMoveId');
-            var params = $(event.target).data();
-//            var context = new Context(this.ks_df_context, {}, {
-//                active_id: id
-//            });
-
-//            params = _.omit(params, 'actionContext');
+            var actionElement = event.target.closest('[action]');
+            var tdElement = event.target.closest('td');
+            var action = actionElement?.getAttribute('action');
+            var id = tdElement?.dataset.bsAccountId || tdElement?.dataset.bsMoveId;
+            var params = actionElement ? {...actionElement.dataset} : {};
             if (action) {
                 this.orm.call('ks.dynamic.financial.reports', action, [this.props.action.context.id,
         this.ks_df_report_opt,params],{context:this.props.action.context}).then((result) => {
@@ -1064,49 +1074,51 @@ class ksDynamicReportsWidget extends Component {
 
             }
         }
-        getMultiRecordSelectorProps(resModel, optionKey) {
+    getMultiRecordSelectorProps(resModel, optionKey) {
+        const resIds = this._ksNormalizeResIds(this.ks_df_report_opt?.[optionKey]);
         return {
             resModel,
-            resIds:this.ks_df_report_opt.ks_partner_ids,
+            resIds,
             update: (event) => {
-                 this.ksPerformOnchange(event);
+                 this.ksPerformOnchange(this._ksNormalizeResIds(event), optionKey);
             },
 
         };
     }
 
     getMultiRecordSelectoraccount(resModel, optionKey) {
+        const resIds = this._ksNormalizeResIds(this.ks_df_report_opt?.[optionKey]);
         return {
             resModel,
-            resIds:this.ks_df_report_opt.analytic_accounts || [],
+            resIds,
             update: (event) => {
-                this.ksPerformOnchangeaccount(event);
+                this.ksPerformOnchangeaccount(this._ksNormalizeResIds(event), optionKey);
 
             },
 
         };
     }
-    async ksPerformOnchange(ev){
-            await this._ksPerformOnchange(ev)
+    async ksPerformOnchange(ev, optionKey = 'ks_partner_ids'){
+            await this._ksPerformOnchange(ev, optionKey)
             this.render()
     }
-    async _ksPerformOnchange(ev){
+    async _ksPerformOnchange(ev, optionKey){
             var self = this;
-            self.ks_df_report_opt.ks_partner_ids = ev;
+            self.ks_df_report_opt[optionKey] = ev;
 //            self.ks_df_report_opt.analytic_accounts = ev.data.ks_analytic_ids;
 //            self.ks_df_report_opt.analytic_tags = ev.data.ks_analytic_tag_ids;
             const result = await this._ksRenderBody();
             this.props
             this.setReportValues(result)
         }
-    async ksPerformOnchangeaccount(ev){
-            await this._ksPerformOnchangeaccount(ev)
+    async ksPerformOnchangeaccount(ev, optionKey = 'analytic_accounts'){
+            await this._ksPerformOnchangeaccount(ev, optionKey)
             this.render()
     }
-    async _ksPerformOnchangeaccount(ev){
+    async _ksPerformOnchangeaccount(ev, optionKey){
             var self = this;
 //            self.ks_df_report_opt.ks_partner_ids = ev;
-            self.ks_df_report_opt.analytic_accounts = ev;
+            self.ks_df_report_opt[optionKey] = ev;
             const result = await this._ksRenderBody();
             this.setReportValues(result)
 
@@ -1126,23 +1138,6 @@ ksDynamicReportsWidget.customizableComponents = {
 ksDynamicReportsWidget.template = "ks_tax_report_lines";
 actionRegistry.add('ks_dynamic_report', ksDynamicReportsWidget);
 return ksDynamicReportsWidget;
-
-//});
-
-
-$(document).ready(function() {
-    $(document).on('click', 'header .o_main_navbar', function(evt) {
-        $('.o_filter_menu').removeClass('ks_d_block')
-    });
-});
-
-
-
-
-
-
-
-
 
 
 

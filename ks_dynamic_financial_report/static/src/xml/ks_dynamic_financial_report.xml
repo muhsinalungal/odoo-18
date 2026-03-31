@@ -3,25 +3,25 @@
     <t t-name="ks_tax_report_lines" owl="1">
         <ControlPanel display="display">
             <t t-set-slot="control-panel-create-button">
-                <Dropdown togglerClass="'btn btn-primary'" showCaret="true">
-                    <t t-set-slot="toggler">
-                        <span t-on-click="OnPrintPdf" type="button">Print
-                            (Pdf)
-                        </span>
-                    </t>
-                    <DropdownItem>
-                        <button t-on-click="ksPrintReportXlsx" type="button" class="btn btn-primary"
-                                style="position: relative;">
-                            Export (XLSX)
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-primary" t-on-click="OnPrintPdf">
+                        Print (Pdf)
+                    </button>
+                    <Dropdown>
+                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split">
+                            <span class="fa fa-caret-down" aria-hidden="true"></span>
+                            <span class="visually-hidden">Toggle report actions</span>
                         </button>
-                    </DropdownItem>
-                    <DropdownItem>
-                        <button type="button" t-on-click="ksReportSendEmail" class="btn btn-primary"
-                                style="position: relative;">
-                            Send Email
-                        </button>
-                    </DropdownItem>
-                </Dropdown>
+                        <t t-set-slot="content">
+                            <DropdownItem onSelected="() => this.ksPrintReportXlsx()">
+                                Export (XLSX)
+                            </DropdownItem>
+                            <DropdownItem onSelected="() => this.ksReportSendEmail()">
+                                Send Email
+                            </DropdownItem>
+                        </t>
+                    </Dropdown>
+                </div>
             </t>
             <t t-set-slot="layout-actions">
                 <t t-set="ks_df_informations" t-value="props.ks_master_value.ks_df_informations"/>
@@ -1124,8 +1124,8 @@
     </t>
 
     <t t-name="ks_searchview_extra_ks_account_information">
-        <Dropdown togglerClass="'btn btn-secondary'">
-            <t t-set-slot="toggler">
+        <Dropdown>
+            <button type="button" class="btn btn-secondary dropdown-toggle">
                 <i class="fa fa-book"/>
                 Account
                 <t t-set="selected_account"
@@ -1133,8 +1133,9 @@
                 <t t-if="selected_account">
                     <t t-esc="selected_account"/>
                 </t>
-            </t>
+            </button>
 
+            <t t-set-slot="content">
             <t t-if="ks_df_informations.ks_account_enable">
                 <!--                <div class="dropdown-menu o_filter_menu p-3 ks_d_block" role="menu"-->
                 <!--                     style="height: auto;max-height: 300px; overflow-x: hidden;">-->
@@ -1152,7 +1153,7 @@
             <t t-else="">
                 <!--                <div class="dropdown-menu o_filter_menu p-3" role="menu"-->
                 <!--                     style="height: auto;max-height: 300px; overflow-x: hidden;">-->
-                    <input type="text" placeholder="Search.." class="ks_input" t-on-keyup="()=>this.onKsSearchFilter()"/>
+                    <input type="text" placeholder="Search.." class="ks_input" t-on-keyup="event => this.onKsSearchFilter(event)"/>
                 <t t-foreach="ks_df_informations['account']" t-as="a" t-key="a_index">
                     <!--                        data-bs-id="a.id" data-bs-filter="account"-->
                     <DropdownItem class="{'selected': a.selected, 'js_account_report_choice_filter': true}"
@@ -1162,14 +1163,15 @@
                 </t>
                 <!--                </div>-->
             </t>
+            </t>
 
         </Dropdown>
 
     </t>
 
     <t t-name="ks_searchview_extra_ks_df_informations">
-        <Dropdown togglerClass="'btn btn-secondary'">
-            <t t-set-slot="toggler">
+        <Dropdown>
+            <button type="button" class="btn btn-secondary dropdown-toggle">
                 <span class="fa fa-filter"/>
                 Options:
                 <t t-if="ks_df_informations.ks_posted_entries !== undefined">
@@ -1185,8 +1187,9 @@
                         <t>Posted Entries,Draft Entries</t>
                     </t>
                 </t>
-            </t>
+            </button>
 
+            <t t-set-slot="content">
             <t t-if="ks_df_informations.ks_option_enable">
                 <!--data-bs-filter="ks_posted_entries"-->
 
@@ -1265,11 +1268,12 @@
                     To Print Report With Details
                 </DropdownItem>
             </t>
+            </t>
         </Dropdown>
     </t>
     <t t-name="ks_searchview_account_filter">
-        <Dropdown togglerClass="'btn btn-secondary'">
-            <t t-set-slot="toggler">
+        <Dropdown>
+            <button type="button" class="btn btn-secondary dropdown-toggle">
                 <span class="fa fa-user"/>
                 Account:
                 <t t-set="account_value">Both</t>
@@ -1280,8 +1284,9 @@
                     </t>
                 </t>
                 <t t-esc="account_value"/>
-            </t>
+            </button>
 
+            <t t-set-slot="content">
             <t t-if="ks_df_informations['ks_account_both_enable']">
                 <t t-foreach="ks_df_informations['account_type']" t-as="a" t-key="a['name']">
                     <!--                        title="a['name']" data-bs-id="a['id']" data-bs-filter="account_type"-->
@@ -1300,20 +1305,23 @@
                     </DropdownItem>
                 </t>
             </t>
+            </t>
         </Dropdown>
     </t>
 
     <t t-name="ks_searchview_analytic_filter">
-        <Dropdown togglerClass="'btn btn-secondary'">
-            <t t-set-slot="toggler">
+        <Dropdown>
+            <button type="button" class="btn btn-secondary dropdown-toggle">
                 <span class="fa fa-folder-open"/>
                 Analytic
+            </button>
+            <t t-set-slot="content">
+                <div class="dropdown-item">
+                    <label>Analytic Account</label>
+                    <MultiRecordSelector
+                            t-props="getMultiRecordSelectoraccount('account.analytic.account', 'analytic_accounts')"/>
+                </div>
             </t>
-            <div class="dropdown-item">
-                <label>Analytic Account</label>
-                <MultiRecordSelector
-                        t-props="getMultiRecordSelectoraccount('account.analytic.account', 'analytic_accounts')"/>
-            </div>
             <!--            <ul class="dropdown-menu o_filter_menu p-3" role="menu">-->
             <!--                <li class="o_account_report_search js_account_analytic_m2m"/>-->
             <!--            </ul>-->
@@ -1321,23 +1329,24 @@
     </t>
 
     <t t-name="ks_searchview_partner_filter">
-        <Dropdown t-if="ks_df_informations['ks_partner']" togglerClass="'btn btn-secondary'"
-        >
-            <t t-set-slot="toggler">
+        <Dropdown t-if="ks_df_informations['ks_partner']">
+            <button type="button" class="btn btn-secondary dropdown-toggle">
                 <span class="fa fa-folder-open"/>
                 Partners
+            </button>
+            <t t-set-slot="content">
+                <div class="dropdown-item">
+                    <label>Partners</label>
+                    <MultiRecordSelector t-props="getMultiRecordSelectorProps('res.partner', 'partner_ids')"/>
+                </div>
             </t>
-            <div class="dropdown-item">
-                <label>Partners</label>
-                <MultiRecordSelector t-props="getMultiRecordSelectorProps('res.partner', 'partner_ids')"/>
-            </div>
         </Dropdown>
 
     </t>
 
     <t t-name="ks_searchview_journals_filter" owl="1">
-        <Dropdown togglerClass="'btn btn-secondary'">
-            <t t-set-slot="toggler">
+        <Dropdown>
+            <button type="button" class="btn btn-secondary dropdown-toggle">
                 <i class="fa fa-book"/>journals
                 <t t-set="selected_journals"
                    t-value="ks_df_informations['name_journal_group'] || ks_df_informations['journals'].filter(journal => journal['selected']).map(journal => journal['code']).join(', ')"/>
@@ -1347,7 +1356,8 @@
                 <t t-else="">
                     All
                 </t>
-            </t>
+            </button>
+            <t t-set-slot="content">
             <t t-if="ks_df_informations['ks_journal_enable']">
                 <t t-foreach="ks_df_informations['journals']" t-as="j" t-key="j_index">
                     <t t-if="j['id'] == 'divider'">
@@ -1411,6 +1421,7 @@
                         </t>
                     </t>
                 </t>
+            </t>
             </t>
         </Dropdown>
     </t>
@@ -1500,9 +1511,9 @@
     </t>
     <t t-name="ks_searchview_date_filter" owl="1">
 
-        <Dropdown togglerClass="'btn btn-secondary'">
+        <Dropdown>
             <t t-set="ks_df_informations" t-value="props.ks_master_value.ks_df_informations"/>
-            <t t-set-slot="toggler">
+            <button type="button" class="btn btn-secondary dropdown-toggle">
                 <i class="fa fa-calendar me-1"/>
                 <t t-if="ks_df_informations['date']['ks_string'] and ks_df_informations['date']['ks_filter'] != 'custom'">
                     <t t-esc="ks_df_informations['date']['ks_string']"/>
@@ -1525,7 +1536,8 @@
                         </span>
                     </t>
                 </t>
-            </t>
+            </button>
+            <t t-set-slot="content">
             <t t-if="ks_df_informations['date']['ks_process'] == 'single'">
                 <DropdownItem class="{'selected': (ks_df_informations.date.ks_filter == 'today')}"
                               onSelected="() => this.updateFilter('today')">
@@ -1594,12 +1606,13 @@
                 </button>
                 </DropdownItem>
             </div>
+            </t>
         </Dropdown>
     </t>
 
     <t t-name="ks_searchview_differentiate_filter" owl="1">
-        <Dropdown togglerClass="'btn btn-secondary'">
-            <t t-set-slot="toggler">
+        <Dropdown>
+            <button type="button" class="btn btn-secondary dropdown-toggle">
                 <span class="fa fa-bar-chart"/>
                 Differentiate:
                 <t t-if="ks_df_informations['ks_differ']['string'] and ks_df_informations['ks_differ']['ks_differentiate_filter'] != 'custom'">
@@ -1625,7 +1638,8 @@
                     </t>
                 </t>
                 -
-            </t>
+            </button>
+            <t t-set-slot="content">
             <DropdownItem class="{'selected': ks_df_informations['ks_diff_filter']['ks_diff_filter_enablity']!=1}"
                           onSelected="() => this.OnChangeComp('no_differentiation')">No Comparison
             </DropdownItem>
@@ -1637,7 +1651,7 @@
                 <input type="number" name="periods_number" value="0"/>
                 <DropdownItem>
                 <button type="button" class="btn-sm btn btn-primary js_account_report_date_cmp_filter"
-                        data-bs-filter='earlier_interval' t-on-click="() => this.OnChangeComp('earlier_interval')">Apply
+                        data-bs-filter='earlier_interval' t-on-click="event => this.OnChangeComp('earlier_interval', event)">Apply
                 </button>
                 </DropdownItem>
             </div>
@@ -1657,10 +1671,11 @@
                 />
                 <DropdownItem>
                 <button type="button" class="btn btn-sm btn-primary js_account_report_date_cmp_filter"
-                        data-bs-filter='custom' t-on-click="() => this.OnChangeComp('custom')">Apply
+                        data-bs-filter='custom' t-on-click="event => this.OnChangeComp('custom', event)">Apply
                 </button>
                 </DropdownItem>
             </div>
+            </t>
 
         </Dropdown>
     </t>

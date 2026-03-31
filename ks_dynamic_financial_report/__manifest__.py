@@ -2,29 +2,31 @@
 {
     'name': 'Dynamic Financial Report',
 
-    'summary': 'Dynamic Financial Report,Profit and loss Report,Balance Sheet Report,Executive,Cash and Flow Report Summary Report,General Ledger Report,Consolidate Journal Report,Age Receivable Report,Age Payable Report,Trial Balance Report,Tax Report',
+    'summary': 'Odoo 18 dynamic financial reports: P&L, Balance Sheet, Tax, GL, Partner Ledger, Aging, Trial Balance, Cash Flow, and Executive Summary',
 
     'description': """
-"
-    odoo accounting reports,
-    odoo financial reports,
-    odoo dynamic financial report,
-    odoo dynamic accounting reports,
-    odoo balance sheet app,
-    create a custom financial report odoo,
-    new financial report odoo,
-    odoo community financial report,
-    odoo community accounting reports,
-    odoo Dynamic Reports,
-    financial report in odoo,
-    odoo financial report builder,
-    dynamic financial report in odoo,
-    odoo 17 dynamic financial reports,
-    odoo custom financial report,
-    odoo financial reports in Excel,
-    odoo financial reports pdf,
-    odoo 17 dynamic financial reports,
-    Print odoo dynamic financial reports,
+Dynamic Financial Report for Odoo 18.
+
+This module provides dynamic accounting and financial reports including:
+- Profit and Loss
+- Balance Sheet
+- Cash Flow Statement
+- Executive Summary
+- Trial Balance
+- General Ledger
+- Partner Ledger
+- Aged Receivable
+- Aged Payable
+- Consolidate Journal
+- Tax Report
+
+Odoo 18 compatibility:
+- Ported and validated on Odoo 18
+- Backend ORM/report APIs updated for Odoo 18
+- Frontend OWL/dropdown behavior updated for Odoo 18
+- XLSX, PDF, drilldown, and filter flows verified during migration
+
+See README.md for local migration notes and tested behavior.
     """,
     'author': 'Ksolves India Ltd.',
 
@@ -33,7 +35,7 @@
     'live_test_url': 'https://dynamicreport15.kappso.in/web/demo_login',
     'category': 'Accounting/Accounting',
     'currency': 'EUR',
-    'version': '18.0.1.0.0',
+    'version': '18.0.1.1.0',
     'price': '119',
     'license': 'OPL-1',
     'maintainer': 'Ksolves India Ltd.',

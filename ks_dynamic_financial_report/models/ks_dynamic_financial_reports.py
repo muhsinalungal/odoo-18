@@ -2,7 +2,7 @@ import ast
 import json
 
 from odoo import models, fields, api, _
-from odoo.tools import float_is_zero, ustr
+from odoo.tools import float_is_zero
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError, ValidationError
 
